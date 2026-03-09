@@ -1,0 +1,26 @@
+{
+  "elements": [
+    {"id": 1, "name": "Вода", "level": 1},
+    {"id": 2, "name": "Огонь", "level": 1},
+    {"id": 3, "name": "Земля", "level": 1},
+    {"id": 4, "name": "Воздух", "level": 1}
+  ],
+  "recipes": {
+    "2": [
+      {"first": "Вода", "second": "Огонь", "result": "Пар"},
+      {"first": "Земля", "second": "Огонь", "result": "Лава"},
+      {"first": "Воздух", "second": "Вода", "result": "Туман"},
+      {"first": "Земля", "second": "Вода", "result": "Грязь"},
+      {"first": "Воздух", "second": "Огонь", "result": "Энергия"}
+    ],
+    "3": [
+      {"first": "Пар", "second": "Лава", "result": "Камень"},
+      {"first": "Туман", "second": "Энергия", "result": "Облако"},
+      {"first": "Грязь", "second": "Огонь", "result": "Кирпич"}
+    ],
+    "4": [
+      {"first": "Камень", "second": "Облако", "result": "Дождь"},
+      {"first": "Кирпич", "second": "Энергия", "result": "Дом"}
+    ]
+  }
+}
