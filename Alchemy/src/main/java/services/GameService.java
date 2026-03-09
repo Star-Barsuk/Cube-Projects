@@ -7,21 +7,14 @@ import models.Recipe;
 import java.util.*;
 
 public class GameService {
-    private List<Element> discoveredElements;
-    private List<Recipe> allRecipes;
-    private Map<String, Element> elementMap;
-    private Map<Integer, List<Recipe>> recipesByLevel;
+    private final List<Element> discoveredElements;
+    private final List<Recipe> allRecipes;
+    private final Map<String, Element> elementMap;
 
     public GameService() {
         GameData data = JsonLoader.loadData();
         this.discoveredElements = new ArrayList<>(data.getElements());
         this.allRecipes = JsonLoader.flattenRecipes(data.getRecipes());
-        this.recipesByLevel = new TreeMap<>();
-
-        for (Map.Entry<String, List<Recipe>> entry : data.getRecipes().entrySet()) {
-            int level = Integer.parseInt(entry.getKey());
-            recipesByLevel.put(level, entry.getValue());
-        }
 
         this.elementMap = new HashMap<>();
         for (Element e : data.getElements()) {
@@ -57,7 +50,7 @@ public class GameService {
                 }
 
                 Element newElement = new Element(
-                        discoveredElements.size() + 1,
+                        getNextElementId(),
                         recipe.getResult(),
                         recipe.getLevel()
                 );
@@ -74,8 +67,14 @@ public class GameService {
                 "Ничего не произошло...", null);
     }
 
-    public boolean hasElement(String elementName) {
-        return elementMap.containsKey(elementName.toLowerCase());
+    /**
+     * Получить следующий доступный ID для элемента
+     */
+    private int getNextElementId() {
+        return discoveredElements.stream()
+                .mapToInt(Element::getId)
+                .max()
+                .orElse(0) + 1;
     }
 
     /**
@@ -85,9 +84,21 @@ public class GameService {
     public Map<Integer, List<Element>> getInventoryByLevel() {
         Map<Integer, List<Element>> byLevel = new TreeMap<>();
         for (Element e : discoveredElements) {
-            byLevel.computeIfAbsent(e.getLevel(), k -> new ArrayList<>()).add(e);
+            byLevel.computeIfAbsent(e.getLevel(), _ -> new ArrayList<>()).add(e);
         }
         return byLevel;
+    }
+
+    /**
+     * Возвращает все рецепты, сгруппированные по уровням
+     * @return Map с уровнями и списками рецептов
+     */
+    public Map<Integer, List<Recipe>> getAllRecipesByLevel() {
+        Map<Integer, List<Recipe>> result = new TreeMap<>();
+        for (Recipe recipe : allRecipes) {
+            result.computeIfAbsent(recipe.getLevel(), _ -> new ArrayList<>()).add(recipe);
+        }
+        return result;
     }
 
     /**
@@ -98,11 +109,11 @@ public class GameService {
     }
 
     /**
-     * Возвращает все рецепты, сгруппированные по уровням
-     * @return Map с уровнями и списками рецептов
+     * Проверяет наличие элемента
      */
-    public Map<Integer, List<Recipe>> getAllRecipesByLevel() {
-        return recipesByLevel;
+    public boolean hasElement(String elementName) {
+        if (elementName == null) return false;
+        return elementMap.containsKey(elementName.toLowerCase().trim());
     }
 
     /**

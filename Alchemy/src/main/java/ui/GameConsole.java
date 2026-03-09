@@ -2,15 +2,17 @@ package ui;
 
 import services.GameService;
 import services.CombineResult;
-import services.CombineResultType;
 import models.Element;
 import models.Recipe;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameConsole {
+    private static final Set<String> EXIT_COMMANDS = Set.of("q", "quit", "выход");
+    private static final Set<String> INVENTORY_COMMANDS = Set.of("i", "inv", "inventory", "инвентарь");
+    private static final Set<String> RECIPES_COMMANDS = Set.of("p", "recipes", "рецепты");
+    private static final Set<String> HELP_COMMANDS = Set.of("h", "help", "помощь");
+
     private final GameService game;
     private final Scanner scanner;
 
@@ -32,7 +34,7 @@ public class GameConsole {
 
             String input = scanner.nextLine().trim().toLowerCase();
 
-            if (input.equals("q") || input.equals("quit") || input.equals("выход")) {
+            if (EXIT_COMMANDS.contains(input)) {
                 printGoodbye();
                 break;
             }
@@ -48,36 +50,24 @@ public class GameConsole {
     }
 
     private void processCommand(String input) {
-        switch (input) {
-            case "i":
-            case "inv":
-            case "inventory":
-            case "инвентарь":
-                displayInventory();
-                break;
-
-            case "p":
-            case "recipes":
-            case "рецепты":
-                displayAllRecipes();
-                break;
-
-            case "h":
-            case "help":
-            case "помощь":
-                printHelp();
-                break;
-
-            default:
-                handleCombineCommand(input);
-                break;
+        if (INVENTORY_COMMANDS.contains(input)) {
+            displayInventory();
+        } else if (RECIPES_COMMANDS.contains(input)) {
+            displayAllRecipes();
+        } else if (HELP_COMMANDS.contains(input)) {
+            printHelp();
+        } else {
+            handleCombineCommand(input);
         }
     }
 
     private void handleCombineCommand(String input) {
-        String[] parts = input.split(" ");
-        if (parts.length == 2) {
-            CombineResult result = game.combine(parts[0], parts[1]);
+        String[] parts = input.split("\\s+");
+        if (parts.length >= 2) {
+            String element1 = parts[0];
+            String element2 = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
+
+            CombineResult result = game.combine(element1, element2);
             displayCombineResult(result);
         } else {
             System.out.println("❌ Неверная команда. Введите два элемента через пробел");
@@ -127,7 +117,7 @@ public class GameConsole {
                     System.out.printf("   • %s + %s = %s\n",
                             recipe.getFirst(), recipe.getSecond(), recipe.getResult());
                 } else {
-                    System.out.printf("   • ? + ? = ?\n");
+                    System.out.print("   • ? + ? = ?\n");
                 }
             }
         }
