@@ -1,8 +1,9 @@
 package services;
 
-public enum CombineResultType {
+public enum CombineStatus {
     SUCCESS,
     ALREADY_DISCOVERED,
     MISSING_ELEMENTS,
+    INVALID_INPUT,
     NOTHING
 }

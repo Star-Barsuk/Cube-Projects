@@ -45,6 +45,9 @@ bin/
 ### Log ###
 logs
 
+### Saves ###
+elements-save.json
+
 ### Context ###
 .contextignore
 context.txt

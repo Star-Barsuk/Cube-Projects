@@ -15,11 +15,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.3")
 }
 
 application {
-    mainClass.set("Main")
+    mainClass.set("app.Main")
 }
 
 tasks.test {

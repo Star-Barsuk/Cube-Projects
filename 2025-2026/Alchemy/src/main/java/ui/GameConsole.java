@@ -1,9 +1,6 @@
 package ui;
 
 import services.GameService;
-import services.CombineResult;
-import models.Element;
-import models.Recipe;
 
 import java.util.*;
 
@@ -13,29 +10,29 @@ public class GameConsole {
     private static final Set<String> RECIPES_COMMANDS = Set.of("p", "recipes", "рецепты");
     private static final Set<String> HELP_COMMANDS = Set.of("h", "help", "помощь");
 
-    private final GameService game;
+    private final GamePresenter presenter;
     private final Scanner scanner;
 
-    public GameConsole() {
-        this.game = new GameService();
+    public GameConsole(GameService gameService) {
+        this.presenter = new GamePresenter(gameService);
         this.scanner = new Scanner(System.in);
     }
 
     public void start() {
-        printWelcomeMessage();
+        System.out.println(presenter.formatWelcome());
 
         while (true) {
             System.out.print("\n⚡ ");
 
             if (!scanner.hasNextLine()) {
-                System.out.println("\n⚠ No input available. Exiting...");
+                System.out.println("\n⚠ Нет ввода. Завершение...");
                 break;
             }
 
             String input = scanner.nextLine().trim().toLowerCase();
 
             if (EXIT_COMMANDS.contains(input)) {
-                printGoodbye();
+                System.out.println(presenter.formatGoodbye());
                 break;
             }
 
@@ -51,11 +48,11 @@ public class GameConsole {
 
     private void processCommand(String input) {
         if (INVENTORY_COMMANDS.contains(input)) {
-            displayInventory();
+            System.out.println(presenter.formatInventory());
         } else if (RECIPES_COMMANDS.contains(input)) {
-            displayAllRecipes();
+            System.out.println(presenter.formatAllRecipes());
         } else if (HELP_COMMANDS.contains(input)) {
-            printHelp();
+            System.out.println(presenter.formatHelp());
         } else {
             handleCombineCommand(input);
         }
@@ -64,94 +61,11 @@ public class GameConsole {
     private void handleCombineCommand(String input) {
         String[] parts = input.split("\\s+");
         if (parts.length >= 2) {
-            String element1 = parts[0];
-            String element2 = String.join(" ", Arrays.copyOfRange(parts, 1, parts.length));
-
-            CombineResult result = game.combine(element1, element2);
-            displayCombineResult(result);
+            String result = presenter.combine(parts);
+            System.out.println(result);
         } else {
-            System.out.println("❌ Неверная команда. Введите два элемента через пробел");
+            System.out.println("❌ Неверная команда. Введите минимум два элемента через пробел");
             System.out.println("   Или введите 'help' для списка команд");
         }
-    }
-
-    private void displayCombineResult(CombineResult result) {
-        String emoji = switch (result.getType()) {
-            case SUCCESS -> "🎉";
-            case ALREADY_DISCOVERED -> "⚠";
-            case MISSING_ELEMENTS -> "❌";
-            case NOTHING -> "💨";
-        };
-        System.out.println(emoji + " " + result.getMessage());
-    }
-
-    private void displayInventory() {
-        System.out.println("\n📦 ИНВЕНТАРЬ");
-        System.out.println("═".repeat(40));
-
-        Map<Integer, List<Element>> byLevel = game.getInventoryByLevel();
-
-        for (Map.Entry<Integer, List<Element>> entry : byLevel.entrySet()) {
-            System.out.printf("Уровень %d:\n", entry.getKey());
-            for (Element e : entry.getValue()) {
-                System.out.println("   • " + e.getName());
-            }
-        }
-        System.out.println("═".repeat(40));
-        System.out.printf("Всего: %d\n", game.getDiscoveredCount());
-    }
-
-    private void displayAllRecipes() {
-        System.out.println("\n📜 ВСЕ РЕЦЕПТЫ");
-        System.out.println("═".repeat(40));
-
-        Map<Integer, List<Recipe>> recipesByLevel = game.getAllRecipesByLevel();
-
-        for (Map.Entry<Integer, List<Recipe>> entry : recipesByLevel.entrySet()) {
-            System.out.printf("Уровень %d:\n", entry.getKey());
-
-            for (Recipe recipe : entry.getValue()) {
-                boolean isDiscovered = game.isRecipeResultDiscovered(recipe);
-
-                if (isDiscovered) {
-                    System.out.printf("   • %s + %s = %s\n",
-                            recipe.getFirst(), recipe.getSecond(), recipe.getResult());
-                } else {
-                    System.out.print("   • ? + ? = ?\n");
-                }
-            }
-        }
-        System.out.println("═".repeat(40));
-    }
-
-    private void printWelcomeMessage() {
-        System.out.println("\n" + "⭐".repeat(50));
-        System.out.println("            АЛХИМИЯ - ИГРА В СОЗДАНИЕ ЭЛЕМЕНТОВ");
-        System.out.println("⭐".repeat(50));
-        System.out.println("\n🔬 Комбинируйте элементы чтобы открывать новые!");
-        System.out.println("\n📝 Основные команды:");
-        System.out.println("   • Элемент1 Элемент2 - попробовать комбинацию");
-        System.out.println("   • i - инвентарь");
-        System.out.println("   • p - все рецепты");
-        System.out.println("   • h - помощь");
-        System.out.println("   • q - выход");
-        System.out.println("\n✨ Пример: Вода Огонь");
-    }
-
-    private void printHelp() {
-        System.out.println("\n📖 ПОМОЩЬ");
-        System.out.println("═".repeat(40));
-        System.out.println("  i - инвентарь");
-        System.out.println("  p - все рецепты");
-        System.out.println("  h - помощь");
-        System.out.println("  q - выход");
-        System.out.println("\n  Элемент1 Элемент2 - комбинация");
-        System.out.println("═".repeat(40));
-    }
-
-    private void printGoodbye() {
-        System.out.println("\n" + "⭐".repeat(50));
-        System.out.println("            СПАСИБО ЗА ИГРУ! ДО СВИДАНИЯ!");
-        System.out.println("⭐".repeat(50));
     }
 }

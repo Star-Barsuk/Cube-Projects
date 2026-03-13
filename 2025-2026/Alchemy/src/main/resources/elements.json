@@ -5,22 +5,23 @@
     {"id": 3, "name": "Земля", "level": 1},
     {"id": 4, "name": "Воздух", "level": 1}
   ],
-  "recipes": {
-    "2": [
-      {"first": "Вода", "second": "Огонь", "result": "Пар"},
-      {"first": "Земля", "second": "Огонь", "result": "Лава"},
-      {"first": "Воздух", "second": "Вода", "result": "Туман"},
-      {"first": "Земля", "second": "Вода", "result": "Грязь"},
-      {"first": "Воздух", "second": "Огонь", "result": "Энергия"}
-    ],
-    "3": [
-      {"first": "Пар", "second": "Лава", "result": "Камень"},
-      {"first": "Туман", "second": "Энергия", "result": "Облако"},
-      {"first": "Грязь", "second": "Огонь", "result": "Кирпич"}
-    ],
-    "4": [
-      {"first": "Камень", "second": "Облако", "result": "Дождь"},
-      {"first": "Кирпич", "second": "Энергия", "result": "Дом"}
-    ]
-  }
+  "recipes": [
+    {"ingredients": ["Вода", "Огонь"], "result": "Пар", "level": 2},
+    {"ingredients": ["Земля", "Огонь"], "result": "Лава", "level": 2},
+    {"ingredients": ["Воздух", "Вода"], "result": "Туман", "level": 2},
+    {"ingredients": ["Земля", "Вода"], "result": "Грязь", "level": 2},
+    {"ingredients": ["Воздух", "Огонь"], "result": "Энергия", "level": 2},
+    {"ingredients": ["Земля", "Воздух", "Вода"], "result": "Глина", "level": 2},
+
+    {"ingredients": ["Пар", "Лава"], "result": "Камень", "level": 3},
+    {"ingredients": ["Туман", "Энергия"], "result": "Облако", "level": 3},
+    {"ingredients": ["Грязь", "Огонь"], "result": "Кирпич", "level": 3},
+    {"ingredients": ["Вода", "Земля", "Воздух", "Огонь"], "result": "Жизнь", "level": 3},
+
+    {"ingredients": ["Камень", "Облако"], "result": "Дождь", "level": 4},
+    {"ingredients": ["Кирпич", "Энергия"], "result": "Дом", "level": 4},
+    {"ingredients": ["Вода", "Земля", "Воздух", "Огонь", "Энергия"], "result": "Человек", "level": 4},
+    {"ingredients": ["Дом", "Человек"], "result": "Семья", "level": 5},
+    {"ingredients": ["Семья", "Дом", "Жизнь"], "result": "Счастье", "level": 6}
+  ]
 }
