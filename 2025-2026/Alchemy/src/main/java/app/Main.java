@@ -1,9 +1,9 @@
 package app;
 
 import data.GameLoader;
+import gui.WindowManager;
 import models.GameData;
 import services.GameService;
-import ui.GameConsole;
 
 import java.util.Optional;
 
@@ -19,22 +19,13 @@ public class Main {
 
         GameData gameData = gameDataOptional.get();
         GameService gameService = new GameService(gameData);
-        GameConsole gameConsole = new GameConsole(gameService);
 
-        gameConsole.start();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            WindowManager.createWindow("Алхимия", gameService, loader);
+        });
 
-        saveGameProgress(loader, gameService);
-    }
-
-    private static void saveGameProgress(GameLoader loader, GameService gameService) {
-        GameData saveData = new GameData();
-        saveData.setElements(gameService.getDiscoveredElements());
-
-        if (!loader.saveGame(saveData)) {
-            System.err.println("⚠ Не удалось сохранить прогресс игры");
-        } else {
-            System.out.println("\n✨ Прогресс успешно сохранен!");
-        }
+        // GameConsole gameConsole = new GameConsole(gameService);
+        // gameConsole.start();
     }
 
     private static void showFatalError() {

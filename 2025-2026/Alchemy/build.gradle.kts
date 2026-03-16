@@ -25,7 +25,3 @@ application {
 tasks.test {
     useJUnitPlatform()
 }
-
-tasks.withType(JavaExec::class) {
-    standardInput = System.`in`
-}
