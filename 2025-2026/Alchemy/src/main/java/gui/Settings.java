@@ -4,8 +4,8 @@ import java.awt.Font;
 
 public class Settings {
     private static final Font FONT_TITLE = new Font("Arial", Font.BOLD, 20);
-    private static final Font FONT_SUBTITLE = new Font("Arial", Font.BOLD, 16);
-    private static final Font FONT_HEADER = new Font("Arial", Font.BOLD, 14);
+    private static final Font FONT_SUBTITLE = new Font("Arial", Font.BOLD, 20);
+    private static final Font FONT_HEADER = new Font("Arial", Font.BOLD, 17);
     private static final Font FONT_NORMAL = new Font("Arial", Font.PLAIN, 14);
     private static final Font FONT_SMALL = new Font("Arial", Font.PLAIN, 12);
     private static final Font FONT_TINY = new Font("Arial", Font.BOLD, 11);
