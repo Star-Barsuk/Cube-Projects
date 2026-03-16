@@ -1,6 +1,8 @@
 package app;
 
 import core.PhysicsHelperApp;
+import settings.Settings;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -10,26 +12,14 @@ import java.awt.*;
  */
 public class Main {
 
-    // Константы для настройки приложения
     private static final String APP_TITLE = "PhysicsHelper — Помощник по физике";
-    private static final int DEFAULT_WIDTH = 900;
-    private static final int DEFAULT_HEIGHT = 600;
-    private static final int MIN_WIDTH = 700;
-    private static final int MIN_HEIGHT = 500;
+    private static final Settings settings = Settings.getInstance();
 
-    static void main() {
-        // Запускаем приложение в потоке обработки событий Swing
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Настройка внешнего вида приложения
-                configureLookAndFeel();
-
-                // Настройка глобальных параметров UI
                 configureUIManager();
-
-                // Создание и запуск основного окна
                 createAndShowGUI();
-
             } catch (Exception e) {
                 handleFatalError(e);
             }
@@ -37,41 +27,13 @@ public class Main {
     }
 
     /**
-     * Настройка Look and Feel для разных платформ
-     */
-    private static void configureLookAndFeel() {
-        try {
-            // Пытаемся установить системный стиль
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-
-            // Дополнительная настройка для разных ОС
-            String osName = System.getProperty("os.name").toLowerCase();
-
-            if (osName.contains("mac")) {
-                // Специальные настройки для macOS
-                System.setProperty("apple.awt.graphics.UseQuartz", "true");
-                System.setProperty("apple.awt.textantialiasing", "true");
-            } else if (osName.contains("windows")) {
-                // Настройки для Windows
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-            }
-
-        } catch (Exception e) {
-            System.err.println("Не удалось установить системный стиль: " + e.getMessage());
-            // Используем стандартный стиль Java
-        }
-    }
-
-    /**
      * Настройка глобальных параметров UI компонентов
      */
     private static void configureUIManager() {
-        // Настройка шрифтов для различных компонентов
-        Font defaultFont = new Font("Segoe UI", Font.PLAIN, 14);
-        Font boldFont = new Font("Segoe UI", Font.BOLD, 14);
-        Font smallFont = new Font("Segoe UI", Font.PLAIN, 12);
+        Font defaultFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, settings.getGLOBAL_FONT_SIZE());
+        Font boldFont = new Font(settings.getFONT_FAMILY(), Font.BOLD, settings.getGLOBAL_FONT_SIZE());
+        Font smallFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, settings.getDEFAULT_FONT_SIZE());
 
-        // Применяем настройки к различным компонентам
         UIManager.put("Button.font", boldFont);
         UIManager.put("Label.font", defaultFont);
         UIManager.put("TextField.font", defaultFont);
@@ -88,11 +50,9 @@ public class Main {
         UIManager.put("TitledBorder.font", boldFont);
         UIManager.put("ToolTip.font", smallFont);
 
-        // Настройка цветов (опционально)
-        UIManager.put("Button.background", new Color(240, 240, 240));
-        UIManager.put("Panel.background", new Color(245, 245, 245));
+        UIManager.put("Button.background", settings.getCOLOR_BUTTON_BG());
+        UIManager.put("Panel.background", settings.getCOLOR_PANEL_BG());
 
-        // Настройка диалоговых окон
         UIManager.put("OptionPane.messageFont", defaultFont);
         UIManager.put("OptionPane.buttonFont", boldFont);
     }
@@ -102,19 +62,15 @@ public class Main {
      */
     private static void createAndShowGUI() {
         try {
-            // Создаем главное окно приложения
             PhysicsHelperApp app = new PhysicsHelperApp();
 
-            // Настраиваем параметры окна
             app.setTitle(APP_TITLE);
             app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            app.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-            app.setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
+            app.setSize(settings.getDEFAULT_WIDTH(), settings.getDEFAULT_HEIGHT());
+            app.setMinimumSize(new Dimension(settings.getMIN_WIDTH(), settings.getMIN_HEIGHT()));
 
-            // Центрируем окно на экране
             app.setLocationRelativeTo(null);
 
-            // Добавляем обработчик закрытия окна
             app.addWindowListener(new java.awt.event.WindowAdapter() {
                 @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
@@ -122,10 +78,8 @@ public class Main {
                 }
             });
 
-            // Показываем окно
             app.setVisible(true);
 
-            // Логируем успешный запуск
             System.out.println("Приложение успешно запущено: " + new java.util.Date());
 
         } catch (Exception e) {
@@ -143,7 +97,6 @@ public class Main {
                 e.getMessage()
         );
 
-        // Пытаемся показать диалог ошибки
         try {
             JOptionPane.showMessageDialog(
                     null,
@@ -152,12 +105,10 @@ public class Main {
                     JOptionPane.ERROR_MESSAGE
             );
         } catch (Exception ex) {
-            // Если не удалось показать диалог, выводим в консоль
             System.err.println(errorMessage);
             e.printStackTrace();
         }
 
-        // Завершаем приложение с кодом ошибки
         System.exit(1);
     }
 
@@ -166,35 +117,6 @@ public class Main {
      */
     private static void handleApplicationExit() {
         System.out.println("Завершение работы приложения...");
-
-        // Здесь можно добавить сохранение настроек, закрытие ресурсов и т.д.
-
         System.out.println("Приложение успешно завершено.");
-    }
-
-    /**
-     * Метод для проверки версии Java (опционально)
-     */
-    private static void checkJavaVersion() {
-        String version = System.getProperty("java.version");
-        System.out.println("Версия Java: " + version);
-
-        // Проверяем минимальную версию (например, Java 8 или выше)
-        if (version.startsWith("1.4") || version.startsWith("1.5") ||
-                version.startsWith("1.6") || version.startsWith("1.7")) {
-            System.err.println("Внимание: Рекомендуется Java 8 или выше!");
-        }
-    }
-
-    /**
-     * Статический блок инициализации
-     */
-    static {
-        // Проверяем версию Java при загрузке класса
-        checkJavaVersion();
-
-        // Настраиваем прокси, если необходимо (для модулей, требующих интернет)
-        // System.setProperty("http.proxyHost", "proxy.example.com");
-        // System.setProperty("http.proxyPort", "8080");
     }
 }
