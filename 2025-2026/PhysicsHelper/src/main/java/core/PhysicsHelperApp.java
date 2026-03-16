@@ -1,7 +1,13 @@
 package core;
 
-import modules.*;
+import modules.converters.ForceModule;
+import modules.converters.PressureModule;
+import modules.converters.TempModule;
+import modules.tables.GaspDensityModule;
+import modules.tables.LiquidDensityModule;
+import modules.tables.MetalDensityModule;
 import settings.Settings;
+import settings.SettingsDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,10 +38,6 @@ public class PhysicsHelperApp extends JFrame {
 
         createFirstTab();
         createSecondTab();
-
-        if (tabbedPane.getTabCount() > 0) {
-            tabbedPane.setSelectedIndex(0);
-        }
     }
 
     /**
@@ -163,7 +165,7 @@ public class PhysicsHelperApp extends JFrame {
     }
 
     /**
-     * Создает панель заголовка приложения.
+     * Создает панель заголовка приложения с кнопкой настроек.
      */
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -175,16 +177,61 @@ public class PhysicsHelperApp extends JFrame {
                 15
         ));
 
+        // Левая часть с заголовком
         JLabel titleLabel = new JLabel("PhysicsHelper");
         titleLabel.setFont(new Font(settings.getFONT_FAMILY(), Font.BOLD, settings.getHEADER_FONT_SIZE()));
         titleLabel.setForeground(settings.getCOLOR_HEADER_FG());
 
+        // Центральная часть с версией
         JLabel versionLabel = new JLabel("v1.0");
         versionLabel.setFont(new Font(settings.getFONT_FAMILY(), Font.PLAIN, settings.getDEFAULT_FONT_SIZE()));
         versionLabel.setForeground(settings.getCOLOR_VERSION_FG());
 
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(versionLabel, BorderLayout.EAST);
+        // Правая часть с кнопкой настроек
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        rightPanel.setOpaque(false);
+
+        JButton settingsButton = new JButton("⚙️ Настройки");
+        settingsButton.setFont(new Font(settings.getFONT_FAMILY(), Font.PLAIN, settings.getDEFAULT_FONT_SIZE()));
+        settingsButton.setForeground(settings.getCOLOR_HEADER_FG());
+        settingsButton.setBackground(new Color(80, 80, 80));
+        settingsButton.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(100, 100, 100)),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
+        settingsButton.setFocusPainted(false);
+        settingsButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // Добавляем обработчик для открытия окна настроек
+        settingsButton.addActionListener(e -> {
+            SettingsDialog dialog = new SettingsDialog(this, settings);
+            dialog.setVisible(true);
+        });
+
+        // Эффект при наведении
+        settingsButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                settingsButton.setBackground(new Color(100, 100, 100));
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                settingsButton.setBackground(new Color(80, 80, 80));
+            }
+        });
+
+        rightPanel.add(settingsButton);
+
+        // Собираем заголовок
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        leftPanel.setOpaque(false);
+        leftPanel.add(titleLabel);
+
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        centerPanel.setOpaque(false);
+        centerPanel.add(versionLabel);
+
+        headerPanel.add(leftPanel, BorderLayout.WEST);
+        headerPanel.add(centerPanel, BorderLayout.CENTER);
+        headerPanel.add(rightPanel, BorderLayout.EAST);
 
         return headerPanel;
     }

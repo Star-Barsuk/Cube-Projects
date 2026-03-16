@@ -1,4 +1,4 @@
-package modules;
+package modules.converters;
 
 import core.PhysicsModule;
 import settings.Settings;
@@ -7,20 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Модуль для конвертации единиц давления.
+ * Модуль для конвертации единиц температуры.
  */
-public class PressureModule implements PhysicsModule {
+public class TempModule implements PhysicsModule {
     private final Settings settings;
     private final int fontSize;
 
-    public PressureModule() {
+    public TempModule() {
         this.settings = Settings.getInstance();
         this.fontSize = settings.getGLOBAL_FONT_SIZE();
     }
 
     @Override
     public String getName() {
-        return "Давление (Па)";
+        return "Температура (°C)";
     }
 
     @Override
@@ -37,7 +37,7 @@ public class PressureModule implements PhysicsModule {
     }
 
     private JPanel createMainPanel() {
-        JPanel panel = new JPanel(new GridLayout(7, 1,
+        JPanel panel = new JPanel(new GridLayout(6, 1,
                 settings.getCOMPONENT_SPACING(),
                 settings.getCOMPONENT_SPACING()));
         panel.setBorder(BorderFactory.createEmptyBorder(
@@ -56,21 +56,19 @@ public class PressureModule implements PhysicsModule {
     }
 
     private JLabel[] createResultLabels() {
-        Font mainFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, fontSize);
+        Font resultFont = new Font(settings.getFONT_FAMILY(), Font.BOLD, fontSize + 2);
 
-        JLabel kpaLabel = new JLabel("кПа: -");
-        JLabel mpaLabel = new JLabel("МПа: -");
-        JLabel gpaLabel = new JLabel("ГПа: -");
+        JLabel fahrenheitLabel = new JLabel("Фаренгейт: -");
+        JLabel kelvinLabel = new JLabel("Кельвин: -");
 
-        kpaLabel.setFont(mainFont);
-        mpaLabel.setFont(mainFont);
-        gpaLabel.setFont(mainFont);
+        fahrenheitLabel.setFont(resultFont);
+        kelvinLabel.setFont(resultFont);
 
-        return new JLabel[]{kpaLabel, mpaLabel, gpaLabel};
+        return new JLabel[]{fahrenheitLabel, kelvinLabel};
     }
 
     private JButton createConvertButton() {
-        JButton button = new JButton("Конвертировать");
+        JButton button = new JButton("Рассчитать");
         button.setFont(new Font(settings.getFONT_FAMILY(), Font.BOLD, fontSize));
         return button;
     }
@@ -79,14 +77,13 @@ public class PressureModule implements PhysicsModule {
                                         JLabel[] resultLabels, JPanel parentPanel) {
         button.addActionListener(_ -> {
             try {
-                double value = Double.parseDouble(inputField.getText().replace(",", "."));
+                double celsius = Double.parseDouble(inputField.getText().replace(",", "."));
 
-                resultLabels[0].setText(String.format("кПа (кило): %.6f", value / 1_000));
-                resultLabels[1].setText(String.format("МПа (мега): %.6f", value / 1_000_000));
-                resultLabels[2].setText(String.format("ГПа (гига): %.9f", value / 1_000_000_000));
+                resultLabels[0].setText(String.format("Фаренгейт: %.2f °F", (celsius * 9/5) + 32));
+                resultLabels[1].setText(String.format("Кельвин: %.2f K", celsius + 273.15));
 
             } catch (NumberFormatException ex) {
-                showErrorDialog(parentPanel, "Пожалуйста, введите числовое значение давления!");
+                showErrorDialog(parentPanel, "Пожалуйста, введите числовое значение температуры!");
             }
         });
     }
@@ -95,7 +92,7 @@ public class PressureModule implements PhysicsModule {
                                    JButton convertButton, JLabel[] resultLabels) {
         Font mainFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, fontSize);
 
-        JLabel inputLabel = new JLabel("Введите Паскали (Па):");
+        JLabel inputLabel = new JLabel("Введите Цельсии (°C):");
         inputLabel.setFont(mainFont);
 
         panel.add(inputLabel);
@@ -104,7 +101,6 @@ public class PressureModule implements PhysicsModule {
         panel.add(new JSeparator());
         panel.add(resultLabels[0]);
         panel.add(resultLabels[1]);
-        panel.add(resultLabels[2]);
     }
 
     private void showErrorDialog(JPanel parentPanel, String message) {

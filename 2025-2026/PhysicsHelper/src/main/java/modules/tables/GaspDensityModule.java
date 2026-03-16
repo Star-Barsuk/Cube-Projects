@@ -1,4 +1,4 @@
-package modules;
+package modules.tables;
 
 import core.PhysicsModule;
 import settings.Settings;
@@ -8,35 +8,32 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
- * Модуль для отображения справочных данных о плотности металлов.
+ * Модуль для отображения справочных данных о плотности газов.
  */
-public class MetalDensityModule implements PhysicsModule {
+public class GaspDensityModule implements PhysicsModule {
     private final Settings settings;
     private final int fontSize;
 
     private static final Object[][] DENSITY_DATA = {
-            {"Литий", "534"}, {"Калий", "862"}, {"Натрий", "971"},
-            {"Кальций", "1550"}, {"Магний", "1738"}, {"Бериллий", "1848"},
-            {"Цезий", "1873"}, {"Стронций", "2630"}, {"Алюминий", "2698"},
-            {"Барий", "3510"}, {"Титан", "4540"}, {"Ванадий", "6110"},
-            {"Сурьма", "6684"}, {"Цинк", "7133"}, {"Хром", "7190"},
-            {"Марганец", "7440"}, {"Железо", "7874"}, {"Кобальт", "8900"},
-            {"Никель", "8908"}, {"Медь", "8960"}, {"Висмут", "9800"},
-            {"Молибден", "10220"}, {"Серебро", "10500"}, {"Свинец", "11340"},
-            {"Ртуть", "13546"}, {"Тантал", "16650"}, {"Золото", "19300"},
-            {"Вольфрам", "19300"}, {"Платина", "21450"}, {"Осмий", "22590"}
+            {"Водород", "0.09"}, {"Гелий", "0.18"}, {"Метан", "0.72"},
+            {"Неон", "0.90"}, {"Аммиак", "0.77"}, {"Азот", "1.25"},
+            {"Этилен", "1.26"}, {"Воздух", "1.29"}, {"Угарный газ", "1.25"},
+            {"Кислород", "1.43"}, {"Углекислый газ", "1.98"}, {"Закись азота", "1.98"},
+            {"Пропан", "2.01"}, {"Диоксид серы", "2.93"}, {"Бутан", "2.70"},
+            {"Озон", "2.14"}, {"Хлор", "3.21"}, {"Аргон", "1.78"},
+            {"Криптон", "3.75"}, {"Ксенон", "5.89"}
     };
 
-    private static final String[] COLUMN_NAMES = {"Металл", "Плотность (кг/м³)"};
+    private static final String[] COLUMN_NAMES = {"Газ", "Плотность (кг/м³)"};
 
-    public MetalDensityModule() {
+    public GaspDensityModule() {
         this.settings = Settings.getInstance();
         this.fontSize = settings.getGLOBAL_FONT_SIZE();
     }
 
     @Override
     public String getName() {
-        return "Плотность металлов";
+        return "Плотность газов";
     }
 
     @Override
@@ -51,7 +48,7 @@ public class MetalDensityModule implements PhysicsModule {
     }
 
     private JPanel createHeaderPanel() {
-        JLabel header = new JLabel("Справочник металлов", SwingConstants.CENTER);
+        JLabel header = new JLabel("Справочник газов", SwingConstants.CENTER);
         header.setFont(new Font(settings.getFONT_FAMILY(), Font.BOLD, fontSize + 4));
         header.setBorder(BorderFactory.createEmptyBorder(
                 settings.getCOMPONENT_SPACING(), 0,

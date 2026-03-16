@@ -1,4 +1,4 @@
-package modules;
+package modules.tables;
 
 import core.PhysicsModule;
 import settings.Settings;
@@ -8,32 +8,35 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 /**
- * Модуль для отображения справочных данных о плотности жидкостей.
+ * Модуль для отображения справочных данных о плотности металлов.
  */
-public class LiquidDensityModule implements PhysicsModule {
+public class MetalDensityModule implements PhysicsModule {
     private final Settings settings;
     private final int fontSize;
 
     private static final Object[][] DENSITY_DATA = {
-            {"Бензин", "730"}, {"Эфир", "714"}, {"Спирт", "789"},
-            {"Ацетон", "791"}, {"Керосин", "810"}, {"Нефть", "850"},
-            {"Дизель", "850"}, {"Масло машинное", "910"}, {"Масло подсолнечное", "920"},
-            {"Вода", "1000"}, {"Морская вода", "1025"}, {"Молоко", "1030"},
-            {"Тормозная жидкость", "1040"}, {"Уксусная кислота", "1049"}, {"Азотная кислота", "1510"},
-            {"Глицерин", "1260"}, {"Хлороформ", "1483"}, {"Серная кислота", "1840"},
-            {"Ртуть", "13546"}, {"Бром", "3102"}
+            {"Литий", "534"}, {"Калий", "862"}, {"Натрий", "971"},
+            {"Кальций", "1550"}, {"Магний", "1738"}, {"Бериллий", "1848"},
+            {"Цезий", "1873"}, {"Стронций", "2630"}, {"Алюминий", "2698"},
+            {"Барий", "3510"}, {"Титан", "4540"}, {"Ванадий", "6110"},
+            {"Сурьма", "6684"}, {"Цинк", "7133"}, {"Хром", "7190"},
+            {"Марганец", "7440"}, {"Железо", "7874"}, {"Кобальт", "8900"},
+            {"Никель", "8908"}, {"Медь", "8960"}, {"Висмут", "9800"},
+            {"Молибден", "10220"}, {"Серебро", "10500"}, {"Свинец", "11340"},
+            {"Ртуть", "13546"}, {"Тантал", "16650"}, {"Золото", "19300"},
+            {"Вольфрам", "19300"}, {"Платина", "21450"}, {"Осмий", "22590"}
     };
 
-    private static final String[] COLUMN_NAMES = {"Жидкость", "Плотность (кг/м³)"};
+    private static final String[] COLUMN_NAMES = {"Металл", "Плотность (кг/м³)"};
 
-    public LiquidDensityModule() {
+    public MetalDensityModule() {
         this.settings = Settings.getInstance();
         this.fontSize = settings.getGLOBAL_FONT_SIZE();
     }
 
     @Override
     public String getName() {
-        return "Плотность жидкостей";
+        return "Плотность металлов";
     }
 
     @Override
@@ -48,7 +51,7 @@ public class LiquidDensityModule implements PhysicsModule {
     }
 
     private JPanel createHeaderPanel() {
-        JLabel header = new JLabel("Справочник жидкостей", SwingConstants.CENTER);
+        JLabel header = new JLabel("Справочник металлов", SwingConstants.CENTER);
         header.setFont(new Font(settings.getFONT_FAMILY(), Font.BOLD, fontSize + 4));
         header.setBorder(BorderFactory.createEmptyBorder(
                 settings.getCOMPONENT_SPACING(), 0,

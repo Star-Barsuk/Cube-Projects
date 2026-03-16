@@ -1,4 +1,4 @@
-package modules;
+package modules.converters;
 
 import core.PhysicsModule;
 import settings.Settings;
@@ -7,20 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Модуль для конвертации единиц силы.
+ * Модуль для конвертации единиц давления.
  */
-public class ForceModule implements PhysicsModule {
+public class PressureModule implements PhysicsModule {
     private final Settings settings;
     private final int fontSize;
 
-    public ForceModule() {
+    public PressureModule() {
         this.settings = Settings.getInstance();
         this.fontSize = settings.getGLOBAL_FONT_SIZE();
     }
 
     @Override
     public String getName() {
-        return "Сила (Ньютоны)";
+        return "Давление (Па)";
     }
 
     @Override
@@ -58,15 +58,15 @@ public class ForceModule implements PhysicsModule {
     private JLabel[] createResultLabels() {
         Font mainFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, fontSize);
 
-        JLabel knLabel = new JLabel("кН: -");
-        JLabel mnLabel = new JLabel("МН: -");
-        JLabel gnLabel = new JLabel("ГН: -");
+        JLabel kpaLabel = new JLabel("кПа: -");
+        JLabel mpaLabel = new JLabel("МПа: -");
+        JLabel gpaLabel = new JLabel("ГПа: -");
 
-        knLabel.setFont(mainFont);
-        mnLabel.setFont(mainFont);
-        gnLabel.setFont(mainFont);
+        kpaLabel.setFont(mainFont);
+        mpaLabel.setFont(mainFont);
+        gpaLabel.setFont(mainFont);
 
-        return new JLabel[]{knLabel, mnLabel, gnLabel};
+        return new JLabel[]{kpaLabel, mpaLabel, gpaLabel};
     }
 
     private JButton createConvertButton() {
@@ -81,12 +81,12 @@ public class ForceModule implements PhysicsModule {
             try {
                 double value = Double.parseDouble(inputField.getText().replace(",", "."));
 
-                resultLabels[0].setText(String.format("кН (кило): %.6f", value / 1_000));
-                resultLabels[1].setText(String.format("МН (мега): %.6f", value / 1_000_000));
-                resultLabels[2].setText(String.format("ГН (гига): %.9f", value / 1_000_000_000));
+                resultLabels[0].setText(String.format("кПа (кило): %.6f", value / 1_000));
+                resultLabels[1].setText(String.format("МПа (мега): %.6f", value / 1_000_000));
+                resultLabels[2].setText(String.format("ГПа (гига): %.9f", value / 1_000_000_000));
 
             } catch (NumberFormatException ex) {
-                showErrorDialog(parentPanel, "Пожалуйста, введите числовое значение силы!");
+                showErrorDialog(parentPanel, "Пожалуйста, введите числовое значение давления!");
             }
         });
     }
@@ -95,7 +95,7 @@ public class ForceModule implements PhysicsModule {
                                    JButton convertButton, JLabel[] resultLabels) {
         Font mainFont = new Font(settings.getFONT_FAMILY(), Font.PLAIN, fontSize);
 
-        JLabel inputLabel = new JLabel("Введите Ньютоны (Н):");
+        JLabel inputLabel = new JLabel("Введите Паскали (Па):");
         inputLabel.setFont(mainFont);
 
         panel.add(inputLabel);
