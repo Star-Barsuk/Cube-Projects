@@ -13,6 +13,7 @@ public class SettingsDialog extends JDialog {
 
     private JComboBox<String> fontFamilyCombo;
     private JSpinner fontSizeSpinner;
+
     private JButton saveButton;
     private JButton cancelButton;
 
@@ -111,7 +112,7 @@ public class SettingsDialog extends JDialog {
     }
 
     private void setupListeners() {
-        saveButton.addActionListener(e -> {
+        saveButton.addActionListener(_ -> {
             applySettings();
             settings.saveToFile();
 
@@ -130,7 +131,7 @@ public class SettingsDialog extends JDialog {
             }
         });
 
-        cancelButton.addActionListener(e -> dispose());
+        cancelButton.addActionListener(_ -> dispose());
     }
 
     private void restartApplication() {

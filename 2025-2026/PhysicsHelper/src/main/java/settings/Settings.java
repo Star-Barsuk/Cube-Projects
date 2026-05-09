@@ -38,9 +38,9 @@ public class Settings {
     private String FONT_FAMILY = "Segoe UI";
     private int DEFAULT_FONT_SIZE = 16;
     private int GLOBAL_FONT_SIZE = 18;
-    private int HEADER_FONT_SIZE = 20;
+    private int HEADER_FONT_SIZE = 25;
     private int TABLE_HEADER_FONT_SIZE = 18;
-    private int TABLE_ROW_FONT_SIZE = 16;
+    private int TABLE_ROW_FONT_SIZE = 22;
 
     // ========== НАСТРОЙКИ ЦВЕТОВ ==========
     private Color COLOR_HEADER_BG = new Color(60, 60, 60);
