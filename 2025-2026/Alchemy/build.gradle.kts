@@ -3,6 +3,12 @@ plugins {
     id("application")
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
