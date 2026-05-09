@@ -102,6 +102,39 @@ public class GameService {
     }
 
     /**
+     * Комбинирует два элемента (упрощенный метод для обратной совместимости)
+     *
+     * @param elem1 первый элемент
+     * @param elem2 второй элемент
+     * @return результат комбинации или null
+     */
+    public Element combine(Element elem1, Element elem2) {
+        if (elem1 == null || elem2 == null) {
+            return null;
+        }
+
+        CombineResponse response = combine(elem1.getName(), elem2.getName());
+        return response.getResult();
+    }
+
+    /**
+     * Комбинирует три элемента
+     *
+     * @param elem1 первый элемент
+     * @param elem2 второй элемент
+     * @param elem3 третий элемент
+     * @return результат комбинации или null
+     */
+    public Element combine(Element elem1, Element elem2, Element elem3) {
+        if (elem1 == null || elem2 == null || elem3 == null) {
+            return null;
+        }
+
+        CombineResponse response = combine(elem1.getName(), elem2.getName(), elem3.getName());
+        return response.getResult();
+    }
+
+    /**
      * Возвращает все рецепты, сгруппированные по уровням.
      *
      * @return Map, где ключ - уровень рецепта, значение - список рецептов этого уровня
@@ -179,6 +212,17 @@ public class GameService {
     }
 
     /**
+     * Проверяет наличие элемента в инвентаре по объекту Element.
+     *
+     * @param element элемент для проверки
+     * @return true если элемент есть в инвентаре, иначе false
+     */
+    public boolean hasElement(Element element) {
+        if (element == null) return false;
+        return hasElement(element.getName());
+    }
+
+    /**
      * Проверяет, открыт ли результат указанного рецепта.
      *
      * @param recipe рецепт для проверки
@@ -186,5 +230,124 @@ public class GameService {
      */
     public boolean isRecipeResultDiscovered(Recipe recipe) {
         return hasElement(recipe.getResult());
+    }
+
+    /**
+     * Получает все доступные рецепты (где все ингредиенты есть в инвентаре)
+     *
+     * @return список доступных рецептов
+     */
+    public List<Recipe> getAvailableRecipes() {
+        List<Recipe> available = new ArrayList<>();
+
+        for (Recipe recipe : allRecipes) {
+            boolean allIngredientsAvailable = true;
+            for (String ingredient : recipe.getIngredients()) {
+                if (!hasElement(ingredient)) {
+                    allIngredientsAvailable = false;
+                    break;
+                }
+            }
+
+            if (allIngredientsAvailable && !hasElement(recipe.getResult())) {
+                available.add(recipe);
+            }
+        }
+
+        return available;
+    }
+
+    /**
+     * Получает рецепты, которые можно создать из двух элементов
+     *
+     * @param elem1 первый элемент
+     * @param elem2 второй элемент
+     * @return список возможных рецептов
+     */
+    public List<Recipe> getPossibleRecipes(Element elem1, Element elem2) {
+        if (elem1 == null || elem2 == null) {
+            return new ArrayList<>();
+        }
+
+        List<Recipe> possible = new ArrayList<>();
+        Set<String> ingredientSet = new HashSet<>();
+        ingredientSet.add(elem1.getName().toLowerCase());
+        ingredientSet.add(elem2.getName().toLowerCase());
+
+        for (Recipe recipe : allRecipes) {
+            if (recipe.getIngredients().size() == 2) {
+                Set<String> recipeSet = new HashSet<>();
+                for (String ing : recipe.getIngredients()) {
+                    recipeSet.add(ing.toLowerCase());
+                }
+                if (recipeSet.equals(ingredientSet)) {
+                    possible.add(recipe);
+                }
+            }
+        }
+
+        return possible;
+    }
+
+    /**
+     * Получает рецепты, которые можно создать из трех элементов
+     *
+     * @param elem1 первый элемент
+     * @param elem2 второй элемент
+     * @param elem3 третий элемент
+     * @return список возможных рецептов
+     */
+    public List<Recipe> getPossibleRecipes(Element elem1, Element elem2, Element elem3) {
+        if (elem1 == null || elem2 == null || elem3 == null) {
+            return new ArrayList<>();
+        }
+
+        List<Recipe> possible = new ArrayList<>();
+        Set<String> ingredientSet = new HashSet<>();
+        ingredientSet.add(elem1.getName().toLowerCase());
+        ingredientSet.add(elem2.getName().toLowerCase());
+        ingredientSet.add(elem3.getName().toLowerCase());
+
+        for (Recipe recipe : allRecipes) {
+            if (recipe.getIngredients().size() == 3) {
+                Set<String> recipeSet = new HashSet<>();
+                for (String ing : recipe.getIngredients()) {
+                    recipeSet.add(ing.toLowerCase());
+                }
+                if (recipeSet.equals(ingredientSet)) {
+                    possible.add(recipe);
+                }
+            }
+        }
+
+        return possible;
+    }
+
+    /**
+     * Добавляет новый элемент в инвентарь (для тестирования или читов)
+     *
+     * @param elementName имя элемента для добавления
+     * @return true если элемент успешно добавлен, false если элемент уже существует
+     */
+    public boolean addElementToInventory(String elementName) {
+        if (hasElement(elementName)) {
+            return false;
+        }
+
+        // Ищем элемент в рецептах (чтобы получить уровень)
+        for (Recipe recipe : allRecipes) {
+            if (recipe.getResult().equalsIgnoreCase(elementName)) {
+                Element newElement = new Element(
+                        getNextElementId(),
+                        recipe.getResult(),
+                        recipe.getLevel()
+                );
+                discoveredElements.add(newElement);
+                elementMap.put(newElement.getName().toLowerCase(), newElement);
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -2,17 +2,25 @@ package services;
 
 import models.Element;
 
+/**
+ * Ответ на комбинацию элементов
+ */
 public class CombineResponse {
     private final CombineStatus status;
-    private final Element element;
+    private final Element result;
 
-    public CombineResponse(CombineStatus status, Element element) {
+    public CombineResponse(CombineStatus status, Element result) {
         this.status = status;
-        this.element = element;
+        this.result = result;
     }
 
-    public CombineStatus getStatus() { return status; }
-    public Element getElement() { return element; }
+    public CombineStatus getStatus() {
+        return status;
+    }
+
+    public Element getResult() {
+        return result;
+    }
 
     public boolean isSuccess() {
         return status == CombineStatus.SUCCESS;

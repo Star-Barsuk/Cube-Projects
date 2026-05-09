@@ -1,9 +1,12 @@
 package services;
 
-public enum CombineStatus {
-    SUCCESS,
-    ALREADY_DISCOVERED,
-    MISSING_ELEMENTS,
-    INVALID_INPUT,
-    NOTHING
+/**
+ * Статус комбинации
+ */
+enum CombineStatus {
+    SUCCESS,           // Успешно создан новый элемент
+    ALREADY_DISCOVERED, // Элемент уже открыт
+    NOTHING,           // Ничего не получилось
+    MISSING_ELEMENTS,  // Нет одного из элементов в инвентаре
+    INVALID_INPUT      // Неверный ввод (меньше 2 элементов)
 }

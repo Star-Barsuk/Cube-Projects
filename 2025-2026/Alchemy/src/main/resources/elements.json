@@ -18,7 +18,7 @@
     {"ingredients": ["Грязь", "Огонь"], "result": "Кирпич", "level": 3},
     {"ingredients": ["Вода", "Земля", "Воздух", "Огонь"], "result": "Жизнь", "level": 3},
 
-    {"ingredients": ["Камень", "Облако"], "result": "Дождь", "level": 4},
+    {"ingredients": ["Вода", "Облако"], "result": "Дождь", "level": 4},
     {"ingredients": ["Кирпич", "Энергия"], "result": "Дом", "level": 4},
     {"ingredients": ["Вода", "Земля", "Воздух", "Огонь", "Энергия"], "result": "Человек", "level": 4},
     {"ingredients": ["Дом", "Человек"], "result": "Семья", "level": 5},

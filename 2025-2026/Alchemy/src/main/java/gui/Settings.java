@@ -19,7 +19,7 @@ public class Settings {
     private static final Font FONT_ELEMENT_NAME = new Font("Arial", Font.BOLD, 16);
     private static final Font FONT_LEVEL_LABEL = new Font("Arial", Font.BOLD, 15);
     private static final Font FONT_COMBINE_BUTTON = new Font("Arial", Font.BOLD, 16);
-    private static final Font FONT_DIALOGUE = new Font("Arial", Font.PLAIN, 16);
+    private static final Font FONT_DIALOGUE = new Font("Arial", Font.PLAIN, 24);
     private static final Font FONT_PLACEHOLDER = new Font("Dialog", Font.PLAIN, 48);
 
     public static Font getFontTitle() { return FONT_TITLE; }

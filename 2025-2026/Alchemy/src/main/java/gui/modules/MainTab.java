@@ -1,21 +1,31 @@
 package gui.modules;
 
 import gui.Settings;
+import gui.dnd.CombinationSlot;
+import gui.dnd.ElementTransferable;
 import models.Element;
+import services.CombineResponse;
 import services.GameService;
 
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.awt.dnd.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MainTab extends JPanel {
+public class MainTab extends JPanel implements CombinationSlot.SlotListener {
     private final GameService gameService;
 
     private JPanel knownElementsPanel;
     private JPanel craftPanel;
     private JPanel recipePanel;
+
+    // Поля для DnD
+    private CombinationSlot[] slots = new CombinationSlot[6];
+    private JButton combineButton;
+    private JLabel resultLabel;
 
     public MainTab(GameService gameService) {
         this.gameService = gameService;
@@ -153,6 +163,9 @@ public class MainTab extends JPanel {
 
     private JPanel createElementBlock(Element element) {
         JPanel block = new JPanel();
+        block.setName("ElementBlock");
+        block.putClientProperty("element", element);
+
         block.setLayout(new BorderLayout());
         block.setPreferredSize(new Dimension(90, 90));
         block.setMinimumSize(new Dimension(90, 90));
@@ -163,13 +176,44 @@ public class MainTab extends JPanel {
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         ));
 
-        JLabel nameLabel = new JLabel(element.getName(), SwingConstants.CENTER);
+        // Добавляем подсказку о перетаскивании
+        JLabel dragHint = new JLabel("⤴", SwingConstants.RIGHT);
+        dragHint.setFont(new Font("Dialog", Font.PLAIN, 12));
+        dragHint.setForeground(new Color(150, 150, 150));
+        dragHint.setPreferredSize(new Dimension(20, 20));
+        block.add(dragHint, BorderLayout.NORTH);
+
+        JLabel nameLabel = new JLabel("<html><center>" + element.getName() +
+                "<br><font size='-2'>ур." + element.getLevel() +
+                "</font></center></html>", SwingConstants.CENTER);
         nameLabel.setFont(Settings.getFontElementName());
         nameLabel.setForeground(new Color(60, 60, 100));
+        nameLabel.setPreferredSize(new Dimension(80, 60));
 
-        nameLabel.setPreferredSize(new Dimension(80, 40));
+        block.add(nameLabel, BorderLayout.CENTER);
 
-        block.add(nameLabel, BorderLayout.SOUTH);
+        // Настраиваем DragGestureRecognizer
+        DragSource ds = new DragSource();
+        ds.createDefaultDragGestureRecognizer(
+                block,
+                DnDConstants.ACTION_COPY,
+                new DragGestureListener() {
+                    @Override
+                    public void dragGestureRecognized(DragGestureEvent dge) {
+                        dge.startDrag(
+                                DragSource.DefaultCopyDrop,
+                                new ElementTransferable(element),
+                                new DragSourceAdapter() {
+                                    public void dragDropEnd(DragSourceDropEvent dsde) {
+                                        if (dsde.getDropSuccess()) {
+                                            System.out.println("Element " + element.getName() + " dropped successfully");
+                                        }
+                                    }
+                                }
+                        );
+                    }
+                }
+        );
 
         block.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
@@ -212,36 +256,139 @@ public class MainTab extends JPanel {
         gbc.gridwidth = 2;
         craftPanel.add(titleLabel, gbc);
 
-        JPanel placeholderPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        placeholderPanel.setOpaque(false);
+        // Панель со слотами
+        JPanel slotsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        slotsPanel.setOpaque(false);
 
-        for (int i = 0; i < 3; i++) {
-            JPanel slot = new JPanel();
-            slot.setPreferredSize(new Dimension(100, 100));
-            slot.setBackground(new Color(230, 230, 240));
-            slot.setBorder(BorderFactory.createLineBorder(new Color(180, 180, 200), 2));
-
-            JLabel slotLabel = new JLabel(i == 0 ? "?" : "");
-            slotLabel.setFont(Settings.getFontMediumIcon());
-            slot.add(slotLabel);
-
-            placeholderPanel.add(slot);
+        // Создаем слоты
+        for (int i = 0; i < 6; i++) {
+            slots[i] = new CombinationSlot(i, this);
+            slotsPanel.add(slots[i]);
         }
 
         gbc.gridy = 1;
         gbc.gridwidth = 2;
-        craftPanel.add(placeholderPanel, gbc);
+        craftPanel.add(slotsPanel, gbc);
 
-        JButton combineButton = new JButton("Скомбинировать");
+        // Панель для кнопки комбинирования и результата
+        JPanel actionPanel = new JPanel(new GridBagLayout());
+        actionPanel.setOpaque(false);
+
+        combineButton = new JButton("Скомбинировать");
         combineButton.setFont(Settings.getFontCombineButton());
         combineButton.setBackground(new Color(100, 100, 180));
         combineButton.setForeground(Color.WHITE);
         combineButton.setFocusPainted(false);
         combineButton.setBorder(new EmptyBorder(10, 20, 10, 20));
+//        combineButton.setEnabled(false);
+
+        // Добавляем обработчик для комбинирования
+        combineButton.addActionListener(e -> combineElements());
+
+        resultLabel = new JLabel(" ");
+        resultLabel.setFont(new Font("Dialog", Font.BOLD, 14));
+        resultLabel.setForeground(new Color(70, 70, 140));
+
+        GridBagConstraints actionGbc = new GridBagConstraints();
+        actionGbc.gridx = 0;
+        actionGbc.gridy = 0;
+        actionGbc.insets = new Insets(5, 5, 5, 5);
+        actionPanel.add(combineButton, actionGbc);
+
+        actionGbc.gridy = 1;
+        actionPanel.add(resultLabel, actionGbc);
 
         gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        craftPanel.add(combineButton, gbc);
+        craftPanel.add(actionPanel, gbc);
+
+        // Кнопка для очистки слотов
+        JButton clearButton = new JButton("Очистить");
+        clearButton.setFont(new Font("Dialog", Font.PLAIN, 12));
+        clearButton.addActionListener(e -> {
+            clearCombinationSlots();
+            resultLabel.setText(" ");
+        });
+
+        actionGbc.gridx = 1;
+        actionGbc.gridy = 0;
+        actionPanel.add(clearButton, actionGbc);
+    }
+
+    private void combineElements() {
+        // Проверяем, все ли слоты заполнены
+//        if (slots[0].isEmpty() || slots[1].isEmpty() || slots[2].isEmpty()) {
+//            return;
+//        }
+
+        // Получаем элементы из слотов
+        List<Element> elementOn = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            Element elem = slots[i].getElement();
+            if(elem != null) {
+                elementOn.add(elem);
+            }
+        }
+
+        // Комбинируем элементы
+        // 1. Собираем имена элементов в массив строк
+        String[] elementNames = elementOn.stream()
+                .map(Element::getName) // Предполагаю, что у Element есть метод getName()
+                .toArray(String[]::new);
+
+        // 2. Вызываем метод и получаем ответ
+        CombineResponse response = gameService.combine(elementNames);
+        Element result = response.getResult();
+;
+        if (result != null) {
+            resultLabel.setText("Результат: " + result.getName() + " (ур." + result.getLevel() + ")");
+
+            // Очищаем слоты после успешного комбинирования
+            int option = JOptionPane.showConfirmDialog(
+                    this,
+                    "Получен новый элемент: " + result.getName() + "\nОчистить слоты?",
+                    "Комбинация успешна",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (option == JOptionPane.YES_OPTION) {
+                clearCombinationSlots();
+            }
+
+            // Обновляем инвентарь и рецепты
+            refreshKnownElements();
+            refreshRecipes();
+        } else {
+            resultLabel.setText("Ничего нового не получилось...");
+        }
+    }
+
+    @Override
+    public void onElementDropped(int slotIndex, Element element) {
+        System.out.println("Element dropped in slot " + slotIndex + ": " + element.getName());
+        updateCombineButtonState();
+    }
+
+    @Override
+    public void onElementRemoved(int slotIndex) {
+        System.out.println("Element removed from slot " + slotIndex);
+        updateCombineButtonState();
+    }
+
+    private void updateCombineButtonState() {
+        boolean hasAllSlotsFilled = true;
+        for (CombinationSlot slot : slots) {
+            if (slot.isEmpty()) {
+                hasAllSlotsFilled = false;
+                break;
+            }
+        }
+//        combineButton.setEnabled(hasAllSlotsFilled);
+    }
+
+    private void clearCombinationSlots() {
+        for (CombinationSlot slot : slots) {
+            slot.removeElement();
+        }
     }
 
     private void createRecipePanel() {
